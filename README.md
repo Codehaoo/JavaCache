@@ -24,51 +24,52 @@
 ## 如何使用
 我们可以通过具体需求来构建最适合的缓存，下面为大家写了一个构建例子：
 
-@Slf4j
-@Component
-public class Test {
 
-    public static void main(String[] args) throws InterruptedException {
+   @Slf4j
+   @Component
+   public class Test {
 
-        String name = "Test";
+       public static void main(String[] args) throws InterruptedException {
 
-        final CacheLoader<Integer, Integer> cacheLoader = new CacheLoader<Integer, Integer>() {
-            @Override
-            public Integer load(Integer key) {
-                return key;
-            }
-            @Override
-            public void loadAll(Map<Integer, CacheObject<Integer, Integer>> cacheMap) {
-            }
-        };
+           String name = "Test";
 
-        final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+           final CacheLoader<Integer, Integer> cacheLoader = new CacheLoader<Integer, Integer>() {
+               @Override
+               public Integer load(Integer key) {
+                   return key;
+               }
+               @Override
+               public void loadAll(Map<Integer, CacheObject<Integer, Integer>> cacheMap) {
+               }
+           };
 
-        Cache<Integer, Integer> cache = CacheBs.<Integer, Integer>newInstance()
-                .setName(name)
-                // 设置 Cache 大小 （0代表不限制，默认是0）
-                .setCacheSize(40)
-                // 设置 Lock 是否公平 （默认是false）
-                .setFair(false)
-                // 设置 过期时间 （0代表永不过期，默认是0）
-                .setTimeout(1000 * 20)
-                // 设置 Load 加载
-                .setCacheLoader(cacheLoader)
-                // 设置 Persist 持久化
-                .setCachePersist(new RdbCachePersist<>(name, CacheConfig.PERSIST_PATH))
-                // 设置 RemoveCallback 回调函数
-                .setRemoveCallback((key, value, removeReason) -> log.info("<<缓存回调>> 缓存被删除, key=" + key + ", value=" + value + ", reason=" + removeReason))
-                // 设置 Spring Context，目的是为了事件监听，如果不想使用Spring或者有自造轮可自行进行修改
-                .setContext(context)
-                // 构造参数传入具体的淘汰缓存类，该类需要实现 Cache<K, V> 接口
-                // 并且提供有参构造函数(String.class, int.class, long.class, boolean.class)
-                .build(FIFOCache.class);
+           final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+           Cache<Integer, Integer> cache = CacheBs.<Integer, Integer>newInstance()
+                   .setName(name)
+                   // 设置 Cache 大小 （0代表不限制，默认是0）
+                   .setCacheSize(40)
+                   // 设置 Lock 是否公平 （默认是false）
+                   .setFair(false)
+                   // 设置 过期时间 （0代表永不过期，默认是0）
+                   .setTimeout(1000 * 20)
+                   // 设置 Load 加载
+                   .setCacheLoader(cacheLoader)
+                   // 设置 Persist 持久化
+                   .setCachePersist(new RdbCachePersist<>(name, CacheConfig.PERSIST_PATH))
+                   // 设置 RemoveCallback 回调函数
+                   .setRemoveCallback((key, value, removeReason) -> log.info("<<缓存回调>> 缓存被删除, key=" + key + ", value=" + value + ", reason=" + removeReason))
+                   // 设置 Spring Context，目的是为了事件监听，如果不想使用Spring或者有自造轮可自行进行修改
+                   .setContext(context)
+                   // 构造参数传入具体的淘汰缓存类，该类需要实现 Cache<K, V> 接口
+                   // 并且提供有参构造函数(String.class, int.class, long.class, boolean.class)
+                   .build(FIFOCache.class);
 
 
-        // 使用完也不要忘记销毁哦
-        cache.destroy();
-    }
-}
+           // 使用完也不要忘记销毁哦
+           cache.destroy();
+       }
+   }
 
 而 Cache 接口提供以下操作，其实与 Map 是差不多相似的功能，简洁明了。
 
