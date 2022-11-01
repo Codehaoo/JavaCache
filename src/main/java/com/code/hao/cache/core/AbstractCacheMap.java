@@ -197,7 +197,6 @@ public abstract class AbstractCacheMap<K, V> implements Cache<K, V> {
                 try {
                     return f.get();
                 } catch (InterruptedException | ExecutionException e) {
-                    // 这里不处理key，防止反复访问DB，通过定时去清理，不过占内存
                     e.printStackTrace();
                     return null;
                 }
