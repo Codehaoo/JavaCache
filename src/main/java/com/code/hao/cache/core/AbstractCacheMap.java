@@ -202,7 +202,6 @@ public abstract class AbstractCacheMap<K, V> implements Cache<K, V> {
                     return null;
                 }
             }
-            // 这里不做处理，让定时和淘汰机制去处理过期数据
             if (co.isExpired()) {
                 missCount++;
                 return null;
